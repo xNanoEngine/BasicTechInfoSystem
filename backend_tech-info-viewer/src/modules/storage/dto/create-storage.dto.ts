@@ -2,47 +2,49 @@ import {
   IsString,
   IsNotEmpty,
   IsNumber,
-  IsPositive,
   IsInt,
-  IsOptional,
+  IsPositive,
   IsBoolean,
+  IsOptional,
 } from 'class-validator';
 
-export class CreateCpuDto {
-  @IsString()
-  @IsNotEmpty({ message: 'El fabricante (brand) es obligatorio' })
-  manufacturer: string;
-
+export class CreateStorageDto {
   @IsString()
   @IsNotEmpty()
   name: string;
 
   @IsString()
   @IsNotEmpty()
-  socket: string;
+  manufacturer: string;
+
+  @IsString()
+  @IsNotEmpty()
+  type: string;
+
+  @IsString()
+  @IsNotEmpty()
+  formFactor: string;
+
+  @IsString()
+  @IsNotEmpty()
+  interface: string;
 
   @IsNumber()
   @IsInt()
   @IsPositive()
-  cores: number;
+  capacity: number;
 
   @IsNumber()
   @IsInt()
   @IsPositive()
-  threads: number;
-
-  @IsNumber()
-  @IsPositive()
-  baseClock: number;
-
-  @IsNumber()
-  @IsPositive()
-  boostClock: number;
+  @IsOptional()
+  readSpeed?: number;
 
   @IsNumber()
   @IsInt()
   @IsPositive()
-  tdp: number;
+  @IsOptional()
+  writeSpeed?: number;
 
   @IsNumber()
   @IsPositive()
