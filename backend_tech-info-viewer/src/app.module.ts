@@ -9,9 +9,20 @@ import { RamModule } from './modules/ram/ram.module';
 import { PsuModule } from './modules/psu/psu.module';
 import { StorageModule } from './modules/storage/storage.module';
 import { UserModule } from './modules/user/user.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
-  imports: [DatabaseModule, GpuModule, CpuModule, MotherboardModule, RamModule, PsuModule, StorageModule, UserModule],
+  imports: [
+    DatabaseModule,
+    GpuModule,
+    CpuModule,
+    MotherboardModule,
+    RamModule,
+    PsuModule,
+    StorageModule,
+    UserModule,
+    AuthModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

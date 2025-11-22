@@ -7,15 +7,17 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { StorageService } from './storage.service';
 import { CreateStorageDto } from './dto/create-storage.dto';
 import { UpdateStorageDto } from './dto/update-storage.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('storage')
 export class StorageController {
   constructor(private readonly storageService: StorageService) {}
-
+  @UseGuards(AuthGuard('jwt'))
   @Post()
   create(@Body() createStorageDto: CreateStorageDto) {
     return this.storageService.create(createStorageDto);
@@ -30,7 +32,7 @@ export class StorageController {
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.storageService.findOne(id);
   }
-
+  @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -38,7 +40,7 @@ export class StorageController {
   ) {
     return this.storageService.update(id, updateStorageDto);
   }
-
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.storageService.remove(id);
