@@ -8,5 +8,6 @@ import { Gpu } from './entities/gpu.entity';
   imports: [TypeOrmModule.forFeature([Gpu])],
   controllers: [GpuController],
   providers: [GpuService],
+  exports: [GpuService],
 })
 export class GpuModule {}

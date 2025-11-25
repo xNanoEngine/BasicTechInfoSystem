@@ -49,7 +49,10 @@ export class CreateCpuDto {
   @IsPositive()
   price: number;
 
-  @IsUrl({}, { message: 'La imagen debe ser una URL válida' })
+  @IsUrl(
+    { require_tld: false },
+    { message: 'La imagen debe ser una URL válida' },
+  )
   @IsOptional()
   imageUrl?: string;
 

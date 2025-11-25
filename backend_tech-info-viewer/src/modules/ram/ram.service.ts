@@ -4,6 +4,7 @@ import { UpdateRamDto } from './dto/update-ram.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Ram } from './entities/ram.entity';
 import { Repository } from 'typeorm';
+import { SearchDto } from '../search/dto/search.dto';
 
 @Injectable()
 export class RamService {
@@ -31,5 +32,36 @@ export class RamService {
 
   async remove(id: number) {
     return await this.ramRepository.delete(id);
+  }
+
+  async searchAdvanced(filters: SearchDto) {
+    if (filters.socket) return [];
+    if (filters.minVram) return [];
+    if (filters.minWattage) return [];
+    const qb = this.ramRepository.createQueryBuilder('ram');
+
+    if (filters.query) {
+      qb.andWhere('(ram.name ILIKE :term OR ram.manufacturer ILIKE :term)', {
+        term: `%${filters.query}%`,
+      });
+    }
+    if (filters.brand)
+      qb.andWhere('ram.manufacturer ILIKE :brand', {
+        brand: `%${filters.brand}%`,
+      });
+    if (filters.minPrice)
+      qb.andWhere('ram.price >= :min', { min: filters.minPrice });
+    if (filters.maxPrice)
+      qb.andWhere('ram.price <= :max', { max: filters.maxPrice });
+
+    if (filters.memoryType) {
+      qb.andWhere('ram.memoryType ILIKE :memType', {
+        memType: `%${filters.memoryType}%`,
+      });
+    }
+
+    if (filters.sort) qb.orderBy('ram.price', filters.sort);
+
+    return await qb.getMany();
   }
 }

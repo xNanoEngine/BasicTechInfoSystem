@@ -11,6 +11,7 @@ import { StorageModule } from './modules/storage/storage.module';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { FilesModule } from './modules/files/files.module';
+import { SearchModule } from './modules/search/search.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { FilesModule } from './modules/files/files.module';
     UserModule,
     AuthModule,
     FilesModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [AppService],

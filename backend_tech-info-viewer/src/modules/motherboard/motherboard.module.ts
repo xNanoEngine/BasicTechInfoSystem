@@ -8,5 +8,6 @@ import { Motherboard } from './entities/motherboard.entity';
   imports: [TypeOrmModule.forFeature([Motherboard])],
   controllers: [MotherboardController],
   providers: [MotherboardService],
+  exports: [MotherboardService],
 })
 export class MotherboardModule {}

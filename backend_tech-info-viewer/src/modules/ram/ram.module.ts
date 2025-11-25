@@ -8,5 +8,6 @@ import { Ram } from './entities/ram.entity';
   imports: [TypeOrmModule.forFeature([Ram])],
   controllers: [RamController],
   providers: [RamService],
+  exports: [RamService],
 })
 export class RamModule {}
