@@ -6,6 +6,7 @@ import {
   IsPositive,
   IsBoolean,
   IsOptional,
+  IsUrl,
 } from 'class-validator';
 
 export class CreateStorageDto {
@@ -49,6 +50,10 @@ export class CreateStorageDto {
   @IsNumber()
   @IsPositive()
   price: number;
+
+  @IsUrl({}, { message: 'La imagen debe ser una URL válida' })
+  @IsOptional()
+  imageUrl?: string;
 
   @IsBoolean()
   @IsOptional()

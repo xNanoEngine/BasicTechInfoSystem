@@ -32,6 +32,9 @@ export class Ram {
   @Column('int')
   price: number;
 
+  @Column({ name: 'image_url', nullable: true })
+  imageUrl: string;
+
   @Column({ name: 'is_active', default: true })
   isActive: boolean;
 }

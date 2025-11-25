@@ -6,6 +6,7 @@ import {
   IsInt,
   IsOptional,
   IsBoolean,
+  IsUrl,
 } from 'class-validator';
 
 export class CreateCpuDto {
@@ -47,6 +48,10 @@ export class CreateCpuDto {
   @IsNumber()
   @IsPositive()
   price: number;
+
+  @IsUrl({}, { message: 'La imagen debe ser una URL válida' })
+  @IsOptional()
+  imageUrl?: string;
 
   @IsBoolean()
   @IsOptional()

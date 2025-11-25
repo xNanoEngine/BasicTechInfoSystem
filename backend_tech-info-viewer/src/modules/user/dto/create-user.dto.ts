@@ -5,6 +5,8 @@ import {
   //   IsOptional,
   MinLength,
   IsNotEmpty,
+  IsOptional,
+  IsUrl,
 } from 'class-validator';
 // import { UserRole } from '../entities/user.entity';
 
@@ -15,6 +17,10 @@ export class CreateUserDto {
 
   @IsEmail({}, { message: 'El email no es válido' })
   email: string;
+
+  @IsUrl({}, { message: 'La imagen debe ser una URL válida' })
+  @IsOptional()
+  imageUrl?: string;
 
   @IsString()
   @MinLength(6, { message: 'La contraseña debe tener al menos 6 caracteres' })

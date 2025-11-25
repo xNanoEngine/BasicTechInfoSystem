@@ -32,6 +32,9 @@ export class User {
   })
   roles: UserRole;
 
+  @Column({ name: 'image_url', nullable: true })
+  imageUrl: string;
+
   @Column({ default: true })
   isActive: boolean;
 

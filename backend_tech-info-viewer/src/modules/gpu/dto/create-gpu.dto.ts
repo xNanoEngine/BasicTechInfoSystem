@@ -5,6 +5,7 @@ import {
   IsNotEmpty,
   IsBoolean,
   IsOptional,
+  IsUrl,
 } from 'class-validator';
 
 export class CreateGpuDto {
@@ -29,6 +30,10 @@ export class CreateGpuDto {
   @IsNumber()
   @IsPositive()
   price: number;
+
+  @IsUrl({}, { message: 'La imagen debe ser una URL válida' })
+  @IsOptional()
+  imageUrl?: string;
 
   @IsBoolean()
   @IsOptional()

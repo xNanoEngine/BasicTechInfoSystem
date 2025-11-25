@@ -7,6 +7,7 @@ import {
   IsBoolean,
   IsOptional,
   Min,
+  IsUrl,
 } from 'class-validator';
 
 export class CreateMotherboardDto {
@@ -51,6 +52,10 @@ export class CreateMotherboardDto {
   @IsNumber()
   @IsPositive()
   price: number;
+
+  @IsUrl({}, { message: 'La imagen debe ser una URL válida' })
+  @IsOptional()
+  imageUrl?: string;
 
   @IsBoolean()
   @IsOptional()

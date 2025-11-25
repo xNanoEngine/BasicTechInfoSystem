@@ -6,6 +6,7 @@ import {
   IsPositive,
   IsBoolean,
   IsOptional,
+  IsUrl,
 } from 'class-validator';
 
 export class CreatePsuDto {
@@ -37,6 +38,10 @@ export class CreatePsuDto {
   @IsNumber()
   @IsPositive()
   price: number;
+
+  @IsUrl({}, { message: 'La imagen debe ser una URL válida' })
+  @IsOptional()
+  imageUrl?: string;
 
   @IsBoolean()
   @IsOptional()
