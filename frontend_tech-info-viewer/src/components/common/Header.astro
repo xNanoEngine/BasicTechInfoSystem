@@ -1,0 +1,27 @@
+---
+import { ModeToggle } from "@/components/ui/ModeToggle";
+---
+
+<header class="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+    <div class="container flex h-16 max-w-screen-2xl items-center justify-between px-4 sm:px-6 lg:px-8 mx-auto">
+        
+        <div class="flex items-center gap-2">
+            <a href="/" class="flex items-center gap-2">
+                <div class="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold">
+                    TC
+                </div>
+                <span class="hidden font-bold sm:inline-block text-xl tracking-tight">TechCompare</span>
+            </a>
+        </div>
+
+        <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground">
+            <a href="/procesadores" class="transition-colors hover:text-foreground">CPUs</a>
+            <a href="/tarjetas-graficas" class="transition-colors hover:text-foreground">GPUs</a>
+            <a href="/comparar" class="transition-colors hover:text-foreground">Comparador</a>
+        </nav>
+
+        <div class="flex items-center gap-4">
+            <ModeToggle client:load />
+            </div>
+    </div>
+</header>

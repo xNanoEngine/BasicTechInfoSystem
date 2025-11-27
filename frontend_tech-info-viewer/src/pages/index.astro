@@ -1,11 +1,52 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import MainLayout from '@/layouts/Layout.astro';
+import { HeroSearch } from '@/components/products/HeroSearch';
+// import { ProductCard } from '@/components/products/ProductCard';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+// Simulamos latestProducts por si descomentas luego o lo traes del backend
+const latestProducts = []; 
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<MainLayout title="Inicio">
+    <section class="relative py-24 z-10">
+        
+        <div class="absolute inset-0 -z-10 h-full w-full bg-background overflow-hidden">
+            <div class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px]"></div>
+            <div class="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-primary/20 opacity-20 blur-[100px]"></div>
+        </div>
+
+        <div class="container mx-auto px-4 max-w-screen-2xl text-center relative">
+            <h1 class="text-4xl md:text-7xl font-extrabold tracking-tight mb-6 text-foreground">
+                Encuentra el <span class="text-primary">Hardware Perfecto</span>
+            </h1>
+            
+            <p class="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto">
+                Compara especificaciones, precios y rendimiento de miles de componentes de PC en segundos.
+            </p>
+
+            <div class="flex justify-center w-full">
+                 <div class="w-full max-w-3xl"> 
+                    <HeroSearch client:load />
+                 </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="relative z-0 py-16 bg-muted/30">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-3xl font-bold tracking-tight">Últimos Lanzamientos</h2>
+                    <p class="text-muted-foreground mt-1">Lo más nuevo en el mercado de hardware.</p>
+                </div>
+                <a href="/catalogo" class="text-sm font-medium text-indigo-600 hover:text-indigo-500 hover:underline">
+                    Ver todo &rarr;
+                </a>
+            </div>
+
+            {/* <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                Aquí irán tus productos
+            </div> */}
+        </div>
+    </section>
+</MainLayout>

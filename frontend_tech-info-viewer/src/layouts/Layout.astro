@@ -1,26 +1,64 @@
----                            
- import '../styles/global.css'  
----  
+---
+// src/layouts/Layout.astro
+import '../styles/global.css';
+import Header from '../components/common/Header.astro';
+// import Footer from '../components/common/Footer.astro'; 
+
+interface Props {
+	title: string;
+	description?: string;
+}
+
+const { title, description = "El mejor comparador de hardware y componentes de PC" } = Astro.props;
+---
 
 <!doctype html>
-<html lang="en">
+<html lang="es">
 	<head>
 		<meta charset="UTF-8" />
+		<meta name="description" content={description} />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		
+		<title>{title} | TechCompare</title>
+
+		<script is:inline>
+			// Esta función se ejecuta inmediatamente al cargar
+			const getTheme = () => {
+				if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+				return localStorage.getItem('theme');
+				}
+				if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+				return 'dark';
+				}
+				return 'light';
+			};
+
+			const theme = getTheme();
+
+			if (theme === 'dark') {
+				document.documentElement.classList.add('dark');
+			} else {
+				document.documentElement.classList.remove('dark');
+			}
+
+			// Guardamos el estado inicial en window para que React pueda leerlo si quiere
+			window.localStorage.setItem('theme', theme);
+			</script>
 	</head>
-	<body>
-		<slot />
+	
+	<body class="flex flex-col min-h-screen bg-background text-foreground antialiased selection:bg-primary selection:text-primary-foreground">
+        <Header />
+        <main class="grow w-full">
+			<slot />
+		</main>
+        <footer class="border-t py-6 md:px-8 md:py-0">
+            <div class="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row max-w-screen-2xl mx-auto">
+              <p class="text-balance text-center text-sm leading-loose text-muted-foreground md:text-left">
+                Built by <span class="font-medium underline underline-offset-4">You</span>. The source code is available on GitHub.
+              </p>
+            </div>
+        </footer>
 	</body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>

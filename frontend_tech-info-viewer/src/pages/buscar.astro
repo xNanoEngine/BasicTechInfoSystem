@@ -1,0 +1,117 @@
+---
+export const prerender = false;
+import Layout from '@/layouts/Layout.astro';
+import { ProductCard } from '@/components/products/ProductCard';
+import { SearchFilters } from '@/components/search/SearchFilters';
+import { HeroSearch } from '@/components/products/HeroSearch';
+import { productService } from '@/services/product.service';
+import { Button } from '@/components/ui/button'; // Importamos botón para paginación
+
+// --- LOGICA SERVER SIDE ---
+const searchParams = Astro.url.searchParams;
+
+const parseNumber = (key: string): number | undefined => {
+    const value = searchParams.get(key);
+    if (!value) return undefined;
+    const num = Number(value);
+    return isNaN(num) ? undefined : num;
+};
+
+const params = {
+    query: searchParams.get('q') || '',
+    page: Math.max(1, parseNumber('page') || 1),
+    minPrice: parseNumber('minPrice'),
+    maxPrice: parseNumber('maxPrice'),
+    sort: (searchParams.get('sort') === 'DESC' ? 'DESC' : 'ASC') as 'ASC' | 'DESC',
+    limit: 12
+};
+
+// Llamada al servicio
+const { data: products, metadata } = await productService.searchGlobal(params);
+const hasResults = products.length > 0;
+
+// Helper para crear links de paginación manteniendo los filtros
+const createPageLink = (pageNum: number) => {
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('page', String(pageNum));
+    return `${Astro.url.pathname}?${newParams.toString()}`;
+};
+---
+
+<Layout title={`Resultados para ${params.query}`}>
+    <div class="container max-w-screen-2xl mx-auto px-4 py-8">
+        
+        <div class="flex flex-col md:flex-row gap-6 items-end justify-between mb-8 pb-8 border-b border-border">
+            <div class="w-full max-w-2xl">
+                <h1 class="text-3xl font-bold tracking-tight mb-4">
+                    {params.query ? `Resultados para "${params.query}"` : 'Explora nuestro Catálogo'}
+                </h1>
+               
+                <HeroSearch client:load />
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
+            
+            <aside class="lg:col-span-1 h-fit">
+                <SearchFilters client:load />
+            </aside>
+
+            <main class="lg:col-span-3">
+                <div class="mb-6 flex items-center justify-between">
+                    <p class="text-muted-foreground">
+                        Mostrando <strong>{products.length}</strong> de <strong>{metadata.totalResults}</strong> productos
+                    </p>
+                </div>
+
+                {!hasResults ? (
+                    <div class="flex flex-col items-center justify-center py-20 bg-muted/20 rounded-xl border border-dashed border-border">
+                        <div class="text-6xl mb-4">🔍</div>
+                        <h2 class="text-xl font-semibold mb-2">No encontramos nada</h2>
+                        <p class="text-muted-foreground mb-6 text-center max-w-md">
+                            Intenta ajustar los filtros o busca con términos más generales como "RTX" o "Ryzen".
+                        </p>
+                        <a href="/buscar" class="text-primary hover:underline font-medium">
+                            Limpiar todos los filtros
+                        </a>
+                    </div>
+                ) : (
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                        {products.map((product) => (
+                            <ProductCard 
+                                client:visible
+                                title={product.name}
+                                category={product.category}
+                        
+                                price={`$${product.price.toLocaleString()}`} 
+            
+                                image={product.imageUrl || "/placeholder.png"} 
+          
+                                isNew={false} 
+                            />
+                        ))}
+                    </div>
+                )}
+                {metadata.totalPages > 1 && (
+                    <div class="mt-12 flex justify-center gap-4">
+                        {metadata.currentPage > 1 && (
+                            <a href={createPageLink(metadata.currentPage - 1)}>
+                                <Button variant="outline">Anterior</Button>
+                            </a>
+                        )}
+                        
+                        <span class="flex items-center px-4 font-medium text-sm">
+                            Página {metadata.currentPage} de {metadata.totalPages}
+                        </span>
+
+                        {metadata.currentPage < metadata.totalPages && (
+                            <a href={createPageLink(metadata.currentPage + 1)}>
+                                <Button variant="outline">Siguiente</Button>
+                            </a>
+                        )}
+                    </div>
+                )}
+            </main>
+        </div>
+    </div>
+</Layout>
