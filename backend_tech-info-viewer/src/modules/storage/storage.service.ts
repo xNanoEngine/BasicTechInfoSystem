@@ -60,7 +60,9 @@ export class StorageService {
     if (filters.maxPrice)
       qb.andWhere('storage.price <= :max', { max: filters.maxPrice });
 
-    if (filters.sort) qb.orderBy('storage.price', filters.sort);
+    if (filters.sort === 'ASC' || filters.sort === 'DESC') {
+      qb.orderBy('storage.price', filters.sort);
+    }
 
     return await qb.getMany();
   }

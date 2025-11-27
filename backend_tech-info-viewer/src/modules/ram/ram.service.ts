@@ -60,7 +60,9 @@ export class RamService {
       });
     }
 
-    if (filters.sort) qb.orderBy('ram.price', filters.sort);
+    if (filters.sort === 'ASC' || filters.sort === 'DESC') {
+      qb.orderBy('ram.price', filters.sort);
+    }
 
     return await qb.getMany();
   }

@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
 
 @Entity('gpus')
 export class Gpu {
@@ -25,4 +25,7 @@ export class Gpu {
 
   @Column({ name: 'is_active', default: true })
   isActive: boolean;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
 }

@@ -55,6 +55,9 @@ export class SearchService {
       allResults.sort((a, b) => a.price - b.price);
     } else if (filters.sort === 'DESC') {
       allResults.sort((a, b) => b.price - a.price);
+    } else if (filters.sort === 'latest') {
+      // @ts-ignore
+      allResults.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     } else {
       allResults.sort((a, b) => a.price - b.price);
     }

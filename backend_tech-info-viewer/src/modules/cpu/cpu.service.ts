@@ -61,7 +61,9 @@ export class CpuService {
       });
     }
 
-    if (filters.sort) qb.orderBy('cpu.price', filters.sort);
+    if (filters.sort === 'ASC' || filters.sort === 'DESC') {
+      qb.orderBy('cpu.price', filters.sort);
+    }
 
     return await qb.getMany();
   }

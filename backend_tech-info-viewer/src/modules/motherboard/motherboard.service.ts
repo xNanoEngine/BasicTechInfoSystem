@@ -70,7 +70,9 @@ export class MotherboardService {
       });
     }
 
-    if (filters.sort) qb.orderBy('mobo.price', filters.sort);
+    if (filters.sort === 'ASC' || filters.sort === 'DESC') {
+      qb.orderBy('mobo.price', filters.sort);
+    }
 
     return await qb.getMany();
   }

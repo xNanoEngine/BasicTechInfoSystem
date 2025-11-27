@@ -9,14 +9,13 @@ import {
 import { Type } from 'class-transformer';
 
 export class SearchDto {
-  // --- FILTROS GLOBALES (Aplican a todos) ---
   @IsOptional()
   @IsString()
-  query?: string; // Texto libre (Ej: "Corsair", "Gaming")
+  query?: string;
 
   @IsOptional()
   @IsString()
-  brand?: string; // Fabricante
+  brand?: string;
 
   @IsOptional()
   @Type(() => Number)
@@ -31,8 +30,8 @@ export class SearchDto {
   maxPrice?: number;
 
   @IsOptional()
-  @IsIn(['ASC', 'DESC'])
-  sort?: 'ASC' | 'DESC';
+  @IsIn(['ASC', 'DESC', 'latest'])
+  sort?: 'ASC' | 'DESC' | 'latest';
 
   @IsOptional()
   @IsString()
@@ -56,7 +55,7 @@ export class SearchDto {
   @Type(() => Number)
   @IsNumber()
   @Min(1)
-  page?: number = 1; // Valor por defecto: 1
+  page?: number = 1; 
 
   @IsOptional()
   @Type(() => Number)

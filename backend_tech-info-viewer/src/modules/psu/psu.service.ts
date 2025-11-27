@@ -59,7 +59,9 @@ export class PsuService {
       qb.andWhere('psu.wattage >= :watts', { watts: filters.minWattage });
     }
 
-    if (filters.sort) qb.orderBy('psu.price', filters.sort);
+    if (filters.sort === 'ASC' || filters.sort === 'DESC') {
+      qb.orderBy('psu.price', filters.sort);
+    }
 
     return await qb.getMany();
   }
