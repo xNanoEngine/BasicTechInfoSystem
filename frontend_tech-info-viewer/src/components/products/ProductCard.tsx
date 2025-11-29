@@ -9,6 +9,7 @@ interface ProductProps {
   price: string
   image: string
   isNew?: boolean
+  href: string
 }
 
 export function ProductCard({
@@ -17,6 +18,7 @@ export function ProductCard({
   price,
   image,
   isNew,
+  href,
 }: ProductProps) {
   return (
     <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-muted/60 bg-card">
@@ -47,12 +49,14 @@ export function ProductCard({
       </CardContent>
 
       <CardFooter className="p-4 pt-0">
-        <Button
-          variant="outline"
-          className="w-full group-hover:border-indigo-500 group-hover:text-indigo-600 transition-colors cursor-pointer"
-        >
-          Ver Detalles <ArrowRight className="w-4 h-4 ml-2" />
-        </Button>
+        <a href={href} className="w-full">
+          <Button
+            variant="outline"
+            className="w-full group-hover:border-indigo-500 group-hover:text-indigo-600 transition-colors cursor-pointer"
+          >
+            Ver Detalles <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
+        </a>
       </CardFooter>
     </Card>
   )

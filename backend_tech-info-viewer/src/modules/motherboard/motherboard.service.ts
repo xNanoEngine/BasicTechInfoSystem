@@ -19,8 +19,60 @@ export class MotherboardService {
     return await this.motherboardRepository.save(newMotherboard);
   }
 
-  async findAll() {
-    return this.motherboardRepository.find();
+  async findAll(params?: SearchDto) {
+    const { page = 1, limit = 20, sort, query, brand, minPrice, maxPrice, socket, memoryType } = params || {};
+    const qb = this.motherboardRepository.createQueryBuilder('mobo');
+
+    if (query) {
+      qb.andWhere(
+        '(mobo.name ILIKE :term OR mobo.chipset ILIKE :term OR mobo.manufacturer ILIKE :term)',
+        {
+          term: `%${query}%`,
+        },
+      );
+    }
+
+    if (brand) {
+      qb.andWhere('mobo.manufacturer ILIKE :brand', { brand: `%${brand}%` });
+    }
+
+    if (minPrice) {
+      qb.andWhere('mobo.price >= :min', { min: minPrice });
+    }
+
+    if (maxPrice) {
+      qb.andWhere('mobo.price <= :max', { max: maxPrice });
+    }
+
+    if (socket) {
+      qb.andWhere('mobo.socket ILIKE :socket', { socket: `%${socket}%` });
+    }
+
+    if (memoryType) {
+      qb.andWhere('mobo.memoryType ILIKE :memType', { memType: `%${memoryType}%` });
+    }
+
+    if (sort === 'ASC' || sort === 'DESC') {
+      qb.orderBy('mobo.price', sort);
+    } else if (sort === 'latest') {
+      qb.orderBy('mobo.id', 'DESC');
+    }
+
+    const total = await qb.getCount();
+    
+    qb.skip((page - 1) * limit).take(limit);
+
+    const data = await qb.getMany();
+
+    return {
+      metadata: {
+        totalResults: total,
+        currentPage: page,
+        perPage: limit,
+        totalPages: Math.ceil(total / limit),
+      },
+      data: data.map(item => ({ ...item, type: 'motherboard', category: 'Placas Madre' })),
+    };
   }
 
   async findOne(id: number) {
@@ -36,44 +88,6 @@ export class MotherboardService {
   }
 
   async searchAdvanced(filters: SearchDto) {
-    if (filters.minVram) return [];
-    if (filters.minWattage) return [];
-    const qb = this.motherboardRepository.createQueryBuilder('mobo');
-
-    if (filters.query) {
-      qb.andWhere(
-        '(mobo.name ILIKE :term OR mobo.chipset ILIKE :term OR mobo.manufacturer ILIKE :term)',
-        {
-          term: `%${filters.query}%`,
-        },
-      );
-    }
-
-    if (filters.brand)
-      qb.andWhere('mobo.manufacturer ILIKE :brand', {
-        brand: `%${filters.brand}%`,
-      });
-    if (filters.minPrice)
-      qb.andWhere('mobo.price >= :min', { min: filters.minPrice });
-    if (filters.maxPrice)
-      qb.andWhere('mobo.price <= :max', { max: filters.maxPrice });
-
-    // Específico 1: Socket
-    if (filters.socket) {
-      qb.andWhere('mobo.socket ILIKE :socket', {
-        socket: `%${filters.socket}%`,
-      });
-    }
-    if (filters.memoryType) {
-      qb.andWhere('mobo.memoryType ILIKE :memType', {
-        memType: `%${filters.memoryType}%`,
-      });
-    }
-
-    if (filters.sort === 'ASC' || filters.sort === 'DESC') {
-      qb.orderBy('mobo.price', filters.sort);
-    }
-
-    return await qb.getMany();
+    return (await this.findAll(filters)).data;
   }
 }

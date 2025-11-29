@@ -8,31 +8,33 @@ import {
   Delete,
   ParseIntPipe,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { CpuService } from './cpu.service';
 import { CreateCpuDto } from './dto/create-cpu.dto';
 import { UpdateCpuDto } from './dto/update-cpu.dto';
-import { AuthGuard } from '@nestjs/passport';
+import { AdminGuard } from '../auth/guards/admin.guard';
+import { SearchDto } from '../search/dto/search.dto';
 
 @Controller('cpu')
 export class CpuController {
   constructor(private readonly cpuService: CpuService) {}
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AdminGuard)
   @Post()
   create(@Body() createCpuDto: CreateCpuDto) {
     return this.cpuService.create(createCpuDto);
   }
 
   @Get()
-  findAll() {
-    return this.cpuService.findAll();
+  findAll(@Query() params: SearchDto) {
+    return this.cpuService.findAll(params);
   }
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.cpuService.findOne(+id);
   }
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AdminGuard)
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -40,7 +42,7 @@ export class CpuController {
   ) {
     return this.cpuService.update(+id, updateCpuDto);
   }
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AdminGuard)
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.cpuService.remove(id);

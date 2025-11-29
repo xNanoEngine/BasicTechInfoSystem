@@ -8,31 +8,33 @@ import {
   Delete,
   ParseIntPipe,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { MotherboardService } from './motherboard.service';
 import { CreateMotherboardDto } from './dto/create-motherboard.dto';
 import { UpdateMotherboardDto } from './dto/update-motherboard.dto';
-import { AuthGuard } from '@nestjs/passport';
+import { AdminGuard } from '../auth/guards/admin.guard';
+import { SearchDto } from '../search/dto/search.dto';
 
 @Controller('motherboard')
 export class MotherboardController {
   constructor(private readonly motherboardService: MotherboardService) {}
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AdminGuard)
   @Post()
   create(@Body() createMotherboardDto: CreateMotherboardDto) {
     return this.motherboardService.create(createMotherboardDto);
   }
 
   @Get()
-  findAll() {
-    return this.motherboardService.findAll();
+  findAll(@Query() params: SearchDto) {
+    return this.motherboardService.findAll(params);
   }
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.motherboardService.findOne(id);
   }
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AdminGuard)
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -40,7 +42,7 @@ export class MotherboardController {
   ) {
     return this.motherboardService.update(id, updateMotherboardDto);
   }
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AdminGuard)
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.motherboardService.remove(id);

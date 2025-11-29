@@ -8,31 +8,33 @@ import {
   Delete,
   ParseIntPipe,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { PsuService } from './psu.service';
 import { CreatePsuDto } from './dto/create-psu.dto';
 import { UpdatePsuDto } from './dto/update-psu.dto';
-import { AuthGuard } from '@nestjs/passport';
+import { AdminGuard } from '../auth/guards/admin.guard';
+import { SearchDto } from '../search/dto/search.dto';
 
 @Controller('psu')
 export class PsuController {
   constructor(private readonly psuService: PsuService) {}
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AdminGuard)
   @Post()
   create(@Body() createPsuDto: CreatePsuDto) {
     return this.psuService.create(createPsuDto);
   }
 
   @Get()
-  findAll() {
-    return this.psuService.findAll();
+  findAll(@Query() params: SearchDto) {
+    return this.psuService.findAll(params);
   }
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.psuService.findOne(id);
   }
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AdminGuard)
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -40,7 +42,7 @@ export class PsuController {
   ) {
     return this.psuService.update(id, updatePsuDto);
   }
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AdminGuard)
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.psuService.remove(id);

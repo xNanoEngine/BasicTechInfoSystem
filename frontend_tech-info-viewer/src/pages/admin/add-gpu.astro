@@ -1,0 +1,15 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { GpuForm } from '@/components/admin/GpuForm';
+---
+
+<AdminLayout title="Agregar GPU">
+  <div class="max-w-4xl mx-auto py-10">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-white mb-2">Gestión de Tarjetas Gráficas</h1>
+      <p class="text-slate-400">Agrega nuevas GPUs al catálogo del sistema.</p>
+    </div>
+    
+    <GpuForm client:load />
+  </div>
+</AdminLayout>

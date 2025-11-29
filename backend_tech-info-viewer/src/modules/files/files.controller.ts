@@ -8,15 +8,15 @@ import {
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { AdminGuard } from '../auth/guards/admin.guard';
 
 @ApiTags('Files') // Para agruparlo bonito en la documentación
 @ApiBearerAuth()
 @Controller('files')
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AdminGuard)
   @Post('upload')
   @ApiConsumes('multipart/form-data')
   @ApiBody({

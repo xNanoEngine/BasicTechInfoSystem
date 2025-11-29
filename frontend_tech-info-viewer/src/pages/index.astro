@@ -2,11 +2,14 @@
 import MainLayout from '@/layouts/Layout.astro';
 import { HeroSearch } from '@/components/products/HeroSearch';
 import { ProductCard } from '@/components/products/ProductCard';
+import type { SearchResponse, SearchResultItem } from '@/components/search/hook/interfaces/search';
 
-let latestProducts = [];
+import { slugify } from '@/lib/utils';
+
+let latestProducts: SearchResultItem[] = [];
 try {
   const response = await fetch('http://localhost:3000/search?sort=latest&limit=4');
-  const data = await response.json();
+  const data = (await response.json()) as SearchResponse;
   latestProducts = data.data || [];
 } catch (error) {
   console.error('Error fetching latest products:', error);
@@ -56,6 +59,7 @@ try {
                         client:visible
                         title={product.name}
                         category={product.category}
+                        href={`/producto/${product.type}/${product.id}-${slugify(product.name)}`}
                         price={`$${product.price}`}
                         image={product.imageUrl || '/placeholder.png'}
                         isNew={true}

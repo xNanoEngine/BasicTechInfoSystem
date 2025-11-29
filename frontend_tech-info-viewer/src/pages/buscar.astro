@@ -6,8 +6,8 @@ import { SearchFilters } from '@/components/search/SearchFilters';
 import { HeroSearch } from '@/components/products/HeroSearch';
 import { productService } from '@/services/product.service';
 import { Button } from '@/components/ui/button'; // Importamos botón para paginación
+import { slugify } from '@/lib/utils';
 
-// --- LOGICA SERVER SIDE ---
 const searchParams = Astro.url.searchParams;
 
 const parseNumber = (key: string): number | undefined => {
@@ -47,14 +47,14 @@ const createPageLink = (pageNum: number) => {
                     {params.query ? `Resultados para "${params.query}"` : 'Explora nuestro Catálogo'}
                 </h1>
                
-                <HeroSearch client:load />
+                <HeroSearch client:only="react" />
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
             
             <aside class="lg:col-span-1 h-fit">
-                <SearchFilters client:load />
+                <SearchFilters client:only="react" />
             </aside>
 
             <main class="lg:col-span-3">
@@ -77,12 +77,14 @@ const createPageLink = (pageNum: number) => {
                     </div>
                 ) : (
                     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                        {products.map((product) => (
+                        {products.map((product: any) => (
                             <ProductCard 
                                 client:visible
                                 title={product.name}
                                 category={product.category}
-                        
+                                href={`/producto/${product.type}/${product.id}-${slugify(
+                                product.name
+                                )}`}
                                 price={`$${product.price.toLocaleString()}`} 
             
                                 image={product.imageUrl || "/placeholder.png"} 

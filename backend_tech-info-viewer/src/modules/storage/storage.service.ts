@@ -18,8 +18,49 @@ export class StorageService {
     return await this.storageRepository.save(newStorage);
   }
 
-  async findAll() {
-    return await this.storageRepository.find();
+  async findAll(params?: SearchDto) {
+    const { page = 1, limit = 20, sort, query, brand, minPrice, maxPrice } = params || {};
+    const qb = this.storageRepository.createQueryBuilder('storage');
+
+    if (query) {
+      qb.andWhere('(storage.name ILIKE :term OR storage.type ILIKE :term)', {
+        term: `%${query}%`,
+      });
+    }
+
+    if (brand) {
+      qb.andWhere('storage.manufacturer ILIKE :brand', { brand: `%${brand}%` });
+    }
+
+    if (minPrice) {
+      qb.andWhere('storage.price >= :min', { min: minPrice });
+    }
+
+    if (maxPrice) {
+      qb.andWhere('storage.price <= :max', { max: maxPrice });
+    }
+
+    if (sort === 'ASC' || sort === 'DESC') {
+      qb.orderBy('storage.price', sort);
+    } else if (sort === 'latest') {
+      qb.orderBy('storage.id', 'DESC');
+    }
+
+    const total = await qb.getCount();
+    
+    qb.skip((page - 1) * limit).take(limit);
+
+    const data = await qb.getMany();
+
+    return {
+      metadata: {
+        totalResults: total,
+        currentPage: page,
+        perPage: limit,
+        totalPages: Math.ceil(total / limit),
+      },
+      data: data.map(item => ({ ...item, type: 'storage', category: 'Almacenamiento' })),
+    };
   }
 
   async findOne(id: number) {
@@ -35,35 +76,6 @@ export class StorageService {
   }
 
   async searchAdvanced(filters: SearchDto) {
-    if (
-      filters.socket ||
-      filters.minVram ||
-      filters.minWattage ||
-      filters.memoryType
-    ) {
-      return [];
-    }
-    const qb = this.storageRepository.createQueryBuilder('storage');
-
-    if (filters.query) {
-      qb.andWhere('(storage.name ILIKE :term OR storage.type ILIKE :term)', {
-        term: `%${filters.query}%`,
-      });
-    }
-
-    if (filters.brand)
-      qb.andWhere('storage.manufacturer ILIKE :brand', {
-        brand: `%${filters.brand}%`,
-      });
-    if (filters.minPrice)
-      qb.andWhere('storage.price >= :min', { min: filters.minPrice });
-    if (filters.maxPrice)
-      qb.andWhere('storage.price <= :max', { max: filters.maxPrice });
-
-    if (filters.sort === 'ASC' || filters.sort === 'DESC') {
-      qb.orderBy('storage.price', filters.sort);
-    }
-
-    return await qb.getMany();
+    return (await this.findAll(filters)).data;
   }
 }

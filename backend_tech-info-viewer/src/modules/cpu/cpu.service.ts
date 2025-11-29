@@ -18,8 +18,53 @@ export class CpuService {
     return await this.cpuRepository.save(newCpu);
   }
 
-  async findAll() {
-    return await this.cpuRepository.find();
+  async findAll(params?: SearchDto) {
+    const { page = 1, limit = 20, sort, query, brand, minPrice, maxPrice, socket } = params || {};
+    const qb = this.cpuRepository.createQueryBuilder('cpu');
+
+    if (query) {
+      qb.andWhere('(cpu.name ILIKE :term OR cpu.manufacturer ILIKE :term)', {
+        term: `%${query}%`,
+      });
+    }
+
+    if (brand) {
+      qb.andWhere('cpu.manufacturer ILIKE :brand', { brand: `%${brand}%` });
+    }
+
+    if (minPrice) {
+      qb.andWhere('cpu.price >= :min', { min: minPrice });
+    }
+
+    if (maxPrice) {
+      qb.andWhere('cpu.price <= :max', { max: maxPrice });
+    }
+
+    if (socket) {
+      qb.andWhere('cpu.socket ILIKE :socket', { socket: `%${socket}%` });
+    }
+
+    if (sort === 'ASC' || sort === 'DESC') {
+      qb.orderBy('cpu.price', sort);
+    } else if (sort === 'latest') {
+      qb.orderBy('cpu.id', 'DESC'); // Assuming ID is auto-increment, or use createdAt if available
+    }
+
+    const total = await qb.getCount();
+    
+    qb.skip((page - 1) * limit).take(limit);
+
+    const data = await qb.getMany();
+
+    return {
+      metadata: {
+        totalResults: total,
+        currentPage: page,
+        perPage: limit,
+        totalPages: Math.ceil(total / limit),
+      },
+      data: data.map(item => ({ ...item, type: 'cpu', category: 'Procesadores' })),
+    };
   }
 
   async findOne(id: number) {
@@ -34,37 +79,8 @@ export class CpuService {
     return await this.cpuRepository.delete(id);
   }
 
+  // Kept for compatibility if needed, but findAll is preferred
   async searchAdvanced(filters: SearchDto) {
-    if (filters.minVram) return [];
-    if (filters.minWattage) return [];
-    if (filters.memoryType) return [];
-    const qb = this.cpuRepository.createQueryBuilder('cpu');
-
-    if (filters.query) {
-      qb.andWhere('(cpu.name ILIKE :term OR cpu.manufacturer ILIKE :term)', {
-        term: `%${filters.query}%`,
-      });
-    }
-
-    if (filters.brand)
-      qb.andWhere('cpu.manufacturer ILIKE :brand', {
-        brand: `%${filters.brand}%`,
-      });
-    if (filters.minPrice)
-      qb.andWhere('cpu.price >= :min', { min: filters.minPrice });
-    if (filters.maxPrice)
-      qb.andWhere('cpu.price <= :max', { max: filters.maxPrice });
-
-    if (filters.socket) {
-      qb.andWhere('cpu.socket ILIKE :socket', {
-        socket: `%${filters.socket}%`,
-      });
-    }
-
-    if (filters.sort === 'ASC' || filters.sort === 'DESC') {
-      qb.orderBy('cpu.price', filters.sort);
-    }
-
-    return await qb.getMany();
+    return (await this.findAll(filters)).data;
   }
 }

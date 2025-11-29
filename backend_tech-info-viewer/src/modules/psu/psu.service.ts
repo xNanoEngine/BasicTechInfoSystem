@@ -18,8 +18,54 @@ export class PsuService {
     return await this.psuRepository.save(newPsu);
   }
 
-  async findAll() {
-    return await this.psuRepository.find();
+  async findAll(params?: SearchDto) {
+    const { page = 1, limit = 20, sort, query, brand, minPrice, maxPrice, minWattage } = params || {};
+    const qb = this.psuRepository.createQueryBuilder('psu');
+
+    if (query) {
+      qb.andWhere(
+        '(psu.name ILIKE :term OR psu.manufacturer ILIKE :term OR psu.certification ILIKE :term)',
+        { term: `%${query}%` },
+      );
+    }
+
+    if (brand) {
+      qb.andWhere('psu.manufacturer ILIKE :brand', { brand: `%${brand}%` });
+    }
+
+    if (minPrice) {
+      qb.andWhere('psu.price >= :min', { min: minPrice });
+    }
+
+    if (maxPrice) {
+      qb.andWhere('psu.price <= :max', { max: maxPrice });
+    }
+
+    if (minWattage) {
+      qb.andWhere('psu.wattage >= :watts', { watts: minWattage });
+    }
+
+    if (sort === 'ASC' || sort === 'DESC') {
+      qb.orderBy('psu.price', sort);
+    } else if (sort === 'latest') {
+      qb.orderBy('psu.id', 'DESC');
+    }
+
+    const total = await qb.getCount();
+    
+    qb.skip((page - 1) * limit).take(limit);
+
+    const data = await qb.getMany();
+
+    return {
+      metadata: {
+        totalResults: total,
+        currentPage: page,
+        perPage: limit,
+        totalPages: Math.ceil(total / limit),
+      },
+      data: data.map(item => ({ ...item, type: 'psu', category: 'Fuentes de Poder' })),
+    };
   }
 
   async findOne(id: number) {
@@ -35,34 +81,6 @@ export class PsuService {
   }
 
   async searchAdvanced(filters: SearchDto) {
-    if (filters.socket) return [];
-    if (filters.minVram) return [];
-    if (filters.memoryType) return [];
-    const qb = this.psuRepository.createQueryBuilder('psu');
-
-    if (filters.query) {
-      qb.andWhere(
-        '(psu.name ILIKE :term OR psu.manufacturer ILIKE :term OR psu.certification ILIKE :term)',
-        { term: `%${filters.query}%` },
-      );
-    }
-
-    if (filters.brand)
-      qb.andWhere('psu.manufacturer ILIKE :brand', {
-        brand: `%${filters.brand}%`,
-      });
-    if (filters.minPrice)
-      qb.andWhere('psu.price >= :min', { min: filters.minPrice });
-    if (filters.maxPrice)
-      qb.andWhere('psu.price <= :max', { max: filters.maxPrice });
-    if (filters.minWattage) {
-      qb.andWhere('psu.wattage >= :watts', { watts: filters.minWattage });
-    }
-
-    if (filters.sort === 'ASC' || filters.sort === 'DESC') {
-      qb.orderBy('psu.price', filters.sort);
-    }
-
-    return await qb.getMany();
+    return (await this.findAll(filters)).data;
   }
 }

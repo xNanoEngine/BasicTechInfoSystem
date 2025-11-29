@@ -2,6 +2,8 @@
 import { ModeToggle } from "@/components/ui/ModeToggle";
 ---
 
+
+
 <header class="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
     <div class="container flex h-16 max-w-screen-2xl items-center justify-between px-4 sm:px-6 lg:px-8 mx-auto">
         
@@ -15,13 +17,16 @@ import { ModeToggle } from "@/components/ui/ModeToggle";
         </div>
 
         <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground">
-            <a href="/procesadores" class="transition-colors hover:text-foreground">CPUs</a>
-            <a href="/tarjetas-graficas" class="transition-colors hover:text-foreground">GPUs</a>
-            <a href="/comparar" class="transition-colors hover:text-foreground">Comparador</a>
+            <a href="/cpu" class="transition-colors hover:text-foreground">CPUs</a>
+            <a href="/motherboard" class="transition-colors hover:text-foreground">Motherboards</a>
+            <a href="/ram" class="transition-colors hover:text-foreground">RAM</a>
+            <a href="/gpu" class="transition-colors hover:text-foreground">GPUs</a>
+            <a href="/psu" class="transition-colors hover:text-foreground">PSUs</a>
+            <a href="/storage" class="transition-colors hover:text-foreground">Almacenamiento</a>
         </nav>
 
         <div class="flex items-center gap-4">
-            <ModeToggle client:load />
+            <ModeToggle client:only="react" />
             </div>
     </div>
 </header>

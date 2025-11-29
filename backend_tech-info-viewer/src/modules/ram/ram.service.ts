@@ -18,8 +18,54 @@ export class RamService {
     return await this.ramRepository.save(newRam);
   }
 
-  async findAll() {
-    return await this.ramRepository.find();
+  async findAll(params?: SearchDto) {
+    const { page = 1, limit = 20, sort, query, brand, minPrice, maxPrice, memoryType } = params || {};
+    const qb = this.ramRepository.createQueryBuilder('ram');
+
+    if (query) {
+      qb.andWhere('(ram.name ILIKE :term OR ram.manufacturer ILIKE :term)', {
+        term: `%${query}%`,
+      });
+    }
+    if (brand) {
+      qb.andWhere('ram.manufacturer ILIKE :brand', { brand: `%${brand}%` });
+    }
+
+    if (minPrice) {
+      qb.andWhere('ram.price >= :min', { min: minPrice });
+    }
+
+    if (maxPrice) {
+      qb.andWhere('ram.price <= :max', { max: maxPrice });
+    }
+
+    if (memoryType) {
+      qb.andWhere('ram.memoryType ILIKE :memType', {
+        memType: `%${memoryType}%`,
+      });
+    }
+
+    if (sort === 'ASC' || sort === 'DESC') {
+      qb.orderBy('ram.price', sort);
+    } else if (sort === 'latest') {
+      qb.orderBy('ram.id', 'DESC');
+    }
+
+    const total = await qb.getCount();
+    
+    qb.skip((page - 1) * limit).take(limit);
+
+    const data = await qb.getMany();
+
+    return {
+      metadata: {
+        totalResults: total,
+        currentPage: page,
+        perPage: limit,
+        totalPages: Math.ceil(total / limit),
+      },
+      data: data.map(item => ({ ...item, type: 'ram', category: 'Memorias RAM' })),
+    };
   }
 
   async findOne(id: number) {
@@ -35,35 +81,6 @@ export class RamService {
   }
 
   async searchAdvanced(filters: SearchDto) {
-    if (filters.socket) return [];
-    if (filters.minVram) return [];
-    if (filters.minWattage) return [];
-    const qb = this.ramRepository.createQueryBuilder('ram');
-
-    if (filters.query) {
-      qb.andWhere('(ram.name ILIKE :term OR ram.manufacturer ILIKE :term)', {
-        term: `%${filters.query}%`,
-      });
-    }
-    if (filters.brand)
-      qb.andWhere('ram.manufacturer ILIKE :brand', {
-        brand: `%${filters.brand}%`,
-      });
-    if (filters.minPrice)
-      qb.andWhere('ram.price >= :min', { min: filters.minPrice });
-    if (filters.maxPrice)
-      qb.andWhere('ram.price <= :max', { max: filters.maxPrice });
-
-    if (filters.memoryType) {
-      qb.andWhere('ram.memoryType ILIKE :memType', {
-        memType: `%${filters.memoryType}%`,
-      });
-    }
-
-    if (filters.sort === 'ASC' || filters.sort === 'DESC') {
-      qb.orderBy('ram.price', filters.sort);
-    }
-
-    return await qb.getMany();
+    return (await this.findAll(filters)).data;
   }
 }

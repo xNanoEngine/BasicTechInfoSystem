@@ -1,0 +1,15 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { MotherboardForm } from '@/components/admin/MotherboardForm';
+---
+
+<AdminLayout title="Agregar Motherboard">
+  <div class="max-w-4xl mx-auto py-10">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-white mb-2">Gestión de Placas Madre</h1>
+      <p class="text-slate-400">Agrega nuevas motherboards al catálogo del sistema.</p>
+    </div>
+    
+    <MotherboardForm client:load />
+  </div>
+</AdminLayout>

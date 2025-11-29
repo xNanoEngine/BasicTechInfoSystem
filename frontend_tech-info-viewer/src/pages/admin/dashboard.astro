@@ -1,0 +1,66 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Dashboard">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-white mb-2">Panel de Administración</h1>
+    <p class="text-slate-400">Gestiona los componentes del sistema</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- CPU Card -->
+    <a href="/admin/add-cpu" class="block p-6 bg-slate-800 rounded-lg border border-slate-700 hover:border-blue-500 transition-colors group">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-white group-hover:text-blue-400">CPUs</h2>
+        <span class="text-3xl">💾</span>
+      </div>
+      <p class="text-slate-400 text-sm">Agregar nuevos procesadores al catálogo</p>
+    </a>
+
+    <!-- GPU Card -->
+    <a href="/admin/add-gpu" class="block p-6 bg-slate-800 rounded-lg border border-slate-700 hover:border-blue-500 transition-colors group">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-white group-hover:text-blue-400">GPUs</h2>
+        <span class="text-3xl">🎮</span>
+      </div>
+      <p class="text-slate-400 text-sm">Agregar nuevas tarjetas gráficas</p>
+    </a>
+
+    <!-- Motherboard Card -->
+    <a href="/admin/add-motherboard" class="block p-6 bg-slate-800 rounded-lg border border-slate-700 hover:border-blue-500 transition-colors group">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-white group-hover:text-blue-400">Motherboards</h2>
+        <span class="text-3xl">🔌</span>
+      </div>
+      <p class="text-slate-400 text-sm">Agregar nuevas placas base</p>
+    </a>
+
+    <!-- RAM Card -->
+    <a href="/admin/add-ram" class="block p-6 bg-slate-800 rounded-lg border border-slate-700 hover:border-blue-500 transition-colors group">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-white group-hover:text-blue-400">RAM</h2>
+        <span class="text-3xl">⚡</span>
+      </div>
+      <p class="text-slate-400 text-sm">Agregar nuevas memorias RAM</p>
+    </a>
+
+    <!-- PSU Card -->
+    <a href="/admin/add-psu" class="block p-6 bg-slate-800 rounded-lg border border-slate-700 hover:border-blue-500 transition-colors group">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-white group-hover:text-blue-400">PSU</h2>
+        <span class="text-3xl">🔋</span>
+      </div>
+      <p class="text-slate-400 text-sm">Agregar nuevas fuentes de poder</p>
+    </a>
+
+    <!-- Storage Card -->
+    <a href="/admin/add-storage" class="block p-6 bg-slate-800 rounded-lg border border-slate-700 hover:border-blue-500 transition-colors group">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-white group-hover:text-blue-400">Almacenamiento</h2>
+        <span class="text-3xl">💾</span>
+      </div>
+      <p class="text-slate-400 text-sm">Agregar nuevos discos duros o SSDs</p>
+    </a>
+  </div>
+</AdminLayout>

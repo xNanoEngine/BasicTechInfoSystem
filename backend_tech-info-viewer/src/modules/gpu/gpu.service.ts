@@ -18,8 +18,53 @@ export class GpuService {
     return await this.gpuRepository.save(newGpu);
   }
 
-  async findAll() {
-    return await this.gpuRepository.find();
+  async findAll(params?: SearchDto) {
+    const { page = 1, limit = 20, sort, query, brand, minPrice, maxPrice, minVram } = params || {};
+    const qb = this.gpuRepository.createQueryBuilder('gpu');
+
+    if (query) {
+      qb.andWhere('(gpu.name ILIKE :term OR gpu.manufacturer ILIKE :term)', {
+        term: `%${query}%`,
+      });
+    }
+
+    if (brand) {
+      qb.andWhere('gpu.manufacturer ILIKE :brand', { brand: `%${brand}%` });
+    }
+
+    if (minPrice) {
+      qb.andWhere('gpu.price >= :min', { min: minPrice });
+    }
+
+    if (maxPrice) {
+      qb.andWhere('gpu.price <= :max', { max: maxPrice });
+    }
+
+    if (minVram) {
+      qb.andWhere('gpu.vram >= :vram', { vram: minVram });
+    }
+
+    if (sort === 'ASC' || sort === 'DESC') {
+      qb.orderBy('gpu.price', sort);
+    } else if (sort === 'latest') {
+      qb.orderBy('gpu.id', 'DESC');
+    }
+
+    const total = await qb.getCount();
+    
+    qb.skip((page - 1) * limit).take(limit);
+
+    const data = await qb.getMany();
+
+    return {
+      metadata: {
+        totalResults: total,
+        currentPage: page,
+        perPage: limit,
+        totalPages: Math.ceil(total / limit),
+      },
+      data: data.map(item => ({ ...item, type: 'gpu', category: 'Tarjetas de Video' })),
+    };
   }
 
   async findOne(id: number) {
@@ -35,33 +80,6 @@ export class GpuService {
   }
 
   async searchAdvanced(filters: SearchDto) {
-    if (filters.socket) return []; // GPUs no van en el socket del CPU
-    if (filters.minWattage) return []; // GPUs no son Fuentes
-    if (filters.memoryType) return []; // GPUs usan GDDR, no DDR de sistema
-    const qb = this.gpuRepository.createQueryBuilder('gpu');
-    if (filters.query) {
-      qb.andWhere('(gpu.name ILIKE :term OR gpu.manufacturer ILIKE :term)', {
-        term: `%${filters.query}%`,
-      });
-    }
-
-    if (filters.brand)
-      qb.andWhere('gpu.manufacturer ILIKE :brand', {
-        brand: `%${filters.brand}%`,
-      });
-    if (filters.minPrice)
-      qb.andWhere('gpu.price >= :min', { min: filters.minPrice });
-    if (filters.maxPrice)
-      qb.andWhere('gpu.price <= :max', { max: filters.maxPrice });
-
-    if (filters.minVram) {
-      qb.andWhere('gpu.vram >= :vram', { vram: filters.minVram });
-    }
-
-    if (filters.sort === 'ASC' || filters.sort === 'DESC') {
-      qb.orderBy('gpu.price', filters.sort);
-    }
-
-    return await qb.getMany();
+    return (await this.findAll(filters)).data;
   }
 }
