@@ -78,7 +78,7 @@ const title = categoryTitles[category] || category;
             <ProductCard
             client:visible
             title={product.name}
-            category={product.category}
+            category={category}
             href={`/producto/${product.type}/${product.id}-${slugify(product.name)}`}
             price={`$${product.price}`}
             image={product.imageUrl || '/placeholder.png'}

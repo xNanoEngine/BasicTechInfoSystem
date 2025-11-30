@@ -5,7 +5,7 @@ import { ProductCard } from '@/components/products/ProductCard';
 import { SearchFilters } from '@/components/search/SearchFilters';
 import { HeroSearch } from '@/components/products/HeroSearch';
 import { productService } from '@/services/product.service';
-import { Button } from '@/components/ui/button'; // Importamos botón para paginación
+import { Button } from '@/components/ui/button'; 
 import { slugify } from '@/lib/utils';
 
 const searchParams = Astro.url.searchParams;
@@ -26,11 +26,10 @@ const params = {
     limit: 12
 };
 
-// Llamada al servicio
+
 const { data: products, metadata } = await productService.searchGlobal(params);
 const hasResults = products.length > 0;
 
-// Helper para crear links de paginación manteniendo los filtros
 const createPageLink = (pageNum: number) => {
     const newParams = new URLSearchParams(searchParams);
     newParams.set('page', String(pageNum));

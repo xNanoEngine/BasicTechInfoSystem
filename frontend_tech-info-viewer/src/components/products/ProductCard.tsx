@@ -48,7 +48,7 @@ export function ProductCard({
         <p className="font-medium mt-2 text-xl">{price}</p>
       </CardContent>
 
-      <CardFooter className="p-4 pt-0">
+      <CardFooter className="p-4 pt-0 gap-2 flex-col sm:flex-row">
         <a href={href} className="w-full">
           <Button
             variant="outline"
@@ -56,6 +56,11 @@ export function ProductCard({
           >
             Ver Detalles <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
+        </a>
+        <a href={`/comparador?category=${category}&p1=${href.split('/').pop()}`} className="w-full">
+            <Button variant="secondary" className="w-full">
+                Comparar
+            </Button>
         </a>
       </CardFooter>
     </Card>

@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ComparatorComponent from '../components/Comparator';
+---
+
+<Layout title="Comparador de Componentes | Tech Info Viewer">
+  <main class="container mx-auto py-8">
+    <ComparatorComponent client:load />
+  </main>
+</Layout>

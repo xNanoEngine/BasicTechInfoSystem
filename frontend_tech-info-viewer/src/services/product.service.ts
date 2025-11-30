@@ -1,41 +1,59 @@
-import { ApiClient } from './api.client'
-import type {
-  SearchResponse,
-  SearchParams,
-} from '@/components/search/hook/interfaces/search'
-
-class ProductService extends ApiClient {
-  [x: string]: any
-  async searchGlobal(params: SearchParams): Promise<SearchResponse> {
-    try {
-      console.log('ProductService.searchGlobal called with params:', params)
-      return await this.get<SearchResponse>('/search', params)
-    } catch (error) {
-      return {
-        metadata: {
-          totalResults: 0,
-          currentPage: 1,
-          perPage: 20,
-          totalPages: 0,
-        },
-        data: [],
-      }
-    }
-  }
-
-  async getProductDetail(type: string, id: string | number): Promise<any> {
-    const endpoint = `/${type}/${id}`
-    try {
-      return await this.get<any>(endpoint)
-    } catch (error) {
-      console.error(`Error fetching ${type} ${id}:`, error)
-      return null
-    }
-  }
-
-  async getBySlug(slug: string) {
-    // return this.get(`/products/${slug}`);
-  }
+export interface Product {
+  id: number;
+  name: string;
+  manufacturer: string;
+  price: number;
+  imageUrl?: string;
+  [key: string]: any;
 }
 
-export const productService = new ProductService()
+export const productService = {
+  async getProductsByCategory(category: string): Promise<Product[]> {
+    try {
+      const response = await fetch(`http://localhost:3000/${category}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+      const data = await response.json();
+      // Handle paginated response structure { data: [...], metadata: ... }
+      return Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : []);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      return [];
+    }
+  },
+
+  async searchGlobal(params: any) {
+    try {
+      const searchParams = new URLSearchParams();
+      if (params.query) searchParams.append('query', params.query);
+      if (params.page) searchParams.append('page', params.page.toString());
+      if (params.limit) searchParams.append('limit', params.limit.toString());
+      if (params.minPrice) searchParams.append('minPrice', params.minPrice.toString());
+      if (params.maxPrice) searchParams.append('maxPrice', params.maxPrice.toString());
+      if (params.sort) searchParams.append('sort', params.sort);
+
+      const response = await fetch(`http://localhost:3000/search?${searchParams.toString()}`);
+      if (!response.ok) {
+        throw new Error('Failed to search products');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error searching products:', error);
+      return { data: [], metadata: { totalResults: 0, totalPages: 0, currentPage: 1 } };
+    }
+  },
+
+  async getProductDetail(type: string, id: string): Promise<Product | null> {
+    try {
+      const response = await fetch(`http://localhost:3000/${type}/${id}`);
+      if (!response.ok) {
+        return null;
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching product detail:', error);
+      return null;
+    }
+  }
+};
